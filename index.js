@@ -1,12 +1,15 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
+const session = require("express-session"); // for github login
 // sequelize (object relational mapper)
 const { Sequelize } = require("sequelize");
+const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy;
 
 // .models means => .models/index.js then indes.js exports all the models
 // import all the models then export them as named exports here => Song
 const { Song } = require("./models");
-const session = require("express-session");
 
 const app = express();
 
@@ -22,7 +25,6 @@ app.use(express.static("public"));
 // body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded (converts str => json)
-
 // order matters: session middleware before Passport OAuth
 // cookie expires after 10 min
 // secrete is key that allows browser know that I am the server
@@ -31,7 +33,49 @@ const sess = {
   cookie: { maxAge: 600000 },
   id: null,
 };
-app.use(session(sess));
+app.use(session(sess));  // setup session middleware
+
+passport.use(new GitHubStrategy({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_CLIENT_SECRET,
+  callbackURL: process.env.GITHUB_CALLBACK_URL
+},
+function(accessToken, refreshToken, profile, cb) {
+  console.log(JSON.stringify(profile));
+
+  // ASIDE: Access Tokens are super important!! Treat them like pwd (never store in plain text)
+  // You can use this to talk to Github API
+  console.log("Access Token: *****=======>" + accessToken);
+
+  // Tell passport to move on
+  cb(null, profile)
+}
+));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configure Passport authenticated session persistence.
+// [doc](https://github.com/passport/express-4.x-facebook-example/blob/master/boot/auth.js)
+// In order to restore authentication state across HTTP requests, Passport needs
+// to serialize users into and deserialize users out of the session.  In a
+// production-quality application, this would typically be as simple as
+// supplying the user ID when serializing, and querying the user record by ID
+// from the database when deserializing.  However, due to the fact that this
+// example does not have a database, the complete Facebook profile is serialized
+// and deserialized.
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
+
+
+console.log('*******process.env.GITHUB_CLIENT_ID******', process.env.GITHUB_CLIENT_ID);
+
+
 
 app.get("/listen", (req, res) => {
   res.send(`<h1>I am here listening!!</h1>`);
@@ -69,6 +113,11 @@ app.post("/api/songs", async (req, res) => {
   // });
 });
 
+
+app.get("/", (req, res) => {
+  console.log("Here! at the ROOOT!!!!")
+  res.send(`<h1>Hello!</h1>`);
+})
 
 
 const PORT = 8080;
