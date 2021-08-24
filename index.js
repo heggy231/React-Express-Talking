@@ -75,7 +75,10 @@ passport.deserializeUser(function(obj, cb) {
 
 console.log('*******process.env.GITHUB_CLIENT_ID******', process.env.GITHUB_CLIENT_ID);
 
-
+app.get("/", (req, res) => {
+  console.log("Here! at the ROOOT!!!!")
+  res.send(`<h1>Hello!</h1>`);
+})
 
 app.get("/listen", (req, res) => {
   res.send(`<h1>I am here listening!!</h1>`);
@@ -113,13 +116,6 @@ app.post("/api/songs", async (req, res) => {
   // });
 });
 
-
-app.get("/", (req, res) => {
-  console.log("Here! at the ROOOT!!!!")
-  res.send(`<h1>Hello!</h1>`);
-})
-
-
 // Place github strategy after the home page
 // http://www.passportjs.org/packages/passport-github/
 // PUT 2 /auth/github/ endpoints after `/` root home pg
@@ -133,9 +129,8 @@ app.get('/auth/github/callback',
   passport.authenticate('github', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/ebooks');
+    res.redirect('/');
   });
-
 
 
 const PORT = 8080;
