@@ -42,6 +42,12 @@ app.get("/api/kpop", (req, res) => {
   res.json(kpopList);
 });
 
+// get all the users in my db
+app.get("/api/songs", async (req, res) => {
+  const songs = await Song.findAll();
+  res.json(songs);
+})
+
 // create a new song
 app.post("/api/songs", async (req, res) => {
   // `req.body` contains an Obj with kpopGroupName, bestSongName, okSongName
@@ -63,11 +69,7 @@ app.post("/api/songs", async (req, res) => {
   // });
 });
 
-// get all the users in my db
-app.get("/songs", async (req, res) => {
-  const songs = await Song.findAll();
-  res.json(songs);
-})
+
 
 const PORT = 8080;
 app.listen(PORT, () =>

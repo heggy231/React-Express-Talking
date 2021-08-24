@@ -28,6 +28,7 @@ function App() {
         .then((res) => res.json())
         .then((songsData) => {
           console.log("Songs from kpop db ===>", songsData);
+          // => [{}, {}, {}] {id: 1, kpopGroupName: "BTS", bestSongName: "Fly to my room", okSongName: "Permission to dance"}
           setSongs(songsData);
         });
     } catch (error) {
@@ -38,6 +39,7 @@ function App() {
   return (
     <div className="App">
       <h1>Kpop listing in console!</h1>
+      <ul>{songs.map(song => <li key={song.id}>{song.kpopGroupName} - {song.bestSongName}</li>)}</ul>
     </div>
   );
 }
