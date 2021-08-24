@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+// sequelize (object relational mapper)
 const { Sequelize } = require("sequelize");
+const { Song } = require("./models");
 const session = require("express-session");
 const passport = require("passport");
 
@@ -49,6 +51,8 @@ app.get("/api/kpop", (req, res) => {
   let kpopList = ["BTS", "Black Pink", "2NE1", "NCT Dream"];
   res.json(kpopList);
 });
+
+app.post('/songs', async (req, res) => )
 
 const PORT = 8080;
 app.listen(PORT, () =>
