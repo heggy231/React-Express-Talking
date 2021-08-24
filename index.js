@@ -2,9 +2,11 @@ const express = require("express");
 const cors = require("cors");
 // sequelize (object relational mapper)
 const { Sequelize } = require("sequelize");
+
+// .models means => .models/index.js then indes.js exports all the models
+// import all the models then export them as named exports here => Song
 const { Song } = require("./models");
 const session = require("express-session");
-const passport = require("passport");
 
 const app = express();
 
@@ -27,21 +29,9 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 const sess = {
   secret: "keyboard mouse",
   cookie: { maxAge: 600000 },
-  id: null
+  id: null,
 };
 app.use(session(sess));
-
-const sequelize = new Sequelize("kpop", "", "", {
-  host: "localhost",
-  dialect: "postgres",
-});
-
-try {
-  sequelize.authenticate();
-  console.log('Connection has been established successfully.');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
-}
 
 app.get("/listen", (req, res) => {
   res.send(`<h1>I am here listening!!</h1>`);
@@ -52,7 +42,25 @@ app.get("/api/kpop", (req, res) => {
   res.json(kpopList);
 });
 
-app.post('/songs', async (req, res) => )
+app.post("/songs", async (req, res) => {
+  // `req.body` contains an Obj with kpopGroupName, bestSongName, okSongName
+  /**
+   * id | kpopGroupName |  bestSongName  |     okSongName      |
+   *  1 | BTS           | Fly to my room | Permission to dance
+   */
+  const { kpopGroupName, bestSongName, okSongName } = req.body;
+  console.log("req.body before ===******>!!!!!!", req.body);
+  const newSong = await Song.create({
+    kpopGroupName,
+    bestSongName,
+    okSongName,
+  });
+  console.log("req.body after ===******>!!!!!!", req.body);
+  res.send(`Done!`);
+  // res.json({
+  //   id: newSong.id,
+  // });
+});
 
 const PORT = 8080;
 app.listen(PORT, () =>
