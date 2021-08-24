@@ -120,6 +120,24 @@ app.get("/", (req, res) => {
 })
 
 
+// Place github strategy after the home page
+// http://www.passportjs.org/packages/passport-github/
+// PUT 2 /auth/github/ endpoints after `/` root home pg
+
+// 1. auth/github takes me to github, user enters github credential to authenticate('github'));
+// 2. once profile is received, callback route => redirect `/` homepage
+// 1,2 GOAL: 1. go to my app => 2. Github => 3. back to my app
+app.get('/auth/github', passport.authenticate('github'));
+
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/ebooks');
+  });
+
+
+
 const PORT = 8080;
 app.listen(PORT, () =>
   console.log(`Sever started at http://localhost:${PORT}`)
