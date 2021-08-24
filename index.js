@@ -1,10 +1,34 @@
 const express = require("express");
+const cors = require("cors");
 const { Sequelize } = require("sequelize");
+const session = require("express-session");
+const passport = require("passport");
 
 const app = express();
 
+// ----------------------------------------------------------------------------
+//                                Middleware
+// ----------------------------------------------------------------------------
+app.use(cors());
 // https://sequelize.org/master/manual/getting-started.html
 // Option 2: Passing parameters separately (other dialects)
+// __dirname is root of the project, Server will look inside public for static file (https://learn.digitalcrafts.com/flex/lessons/back-end-foundations/express-middleware/#serving-static-files)
+// app.use('/', express.static(__dirname + '/public'));
+app.use(express.static("public"));
+// body parsing
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded (converts str => json)
+
+// order matters: session middleware before Passport OAuth
+// cookie expires after 10 min
+// secrete is key that allows browser know that I am the server
+const sess = {
+  secret: "keyboard mouse",
+  cookie: { maxAge: 600000 },
+  id: null
+};
+app.use(session(sess));
+
 const sequelize = new Sequelize("kpop", "", "", {
   host: "localhost",
   dialect: "postgres",
